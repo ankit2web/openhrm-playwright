@@ -29,20 +29,21 @@ test.describe('OrangeHRM - Employee Lifecycle E2E Suite', () => {
     });
 
     // 2. Add New Employee
-    await test.step('2. Add new employee with data-driven payload', async () => {
+    await test.step('2. Add new employee with data-driven payload and photo upload', async () => {
       await pimPage.navigateToPim();
-      await pimPage.addNewEmployee(
+      await pimPage.createEmployee(
         employeeData.firstName,
         employeeData.lastName,
         dynamicEmployeeId,
-        avatarFilePath
+        avatarFilePath,
+        employeeData.middleName
       );
     });
 
     // 3. Edit Employee Information
     await test.step('3. Update employee job title and employment status', async () => {
       await pimPage.navigateToPim();
-      await pimPage.updateJobDetails(
+      await pimPage.editJobDetails(
         dynamicEmployeeId,
         employeeData.jobTitle,
         employeeData.employmentStatus
@@ -50,7 +51,7 @@ test.describe('OrangeHRM - Employee Lifecycle E2E Suite', () => {
     });
 
     // 4. Validate Employee via API
-    await test.step('4. Cross-check UI data with API', async () => {
+    await test.step('4. Cross-check UI data with API contract', async () => {
       await apiService.verifyEmployeeData(dynamicEmployeeId, {
         firstName: employeeData.firstName,
         lastName: employeeData.lastName,

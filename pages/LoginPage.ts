@@ -21,7 +21,7 @@ export class LoginPage extends BasePage {
 
   async navigate(): Promise<void> {
     await this.page.goto('/web/index.php/auth/login');
-    await expect(this.loginButton).toBeVisible({ message: 'Login page failed to render.' });
+    await expect(this.loginButton, 'Login page failed to render.').toBeVisible();
   }
 
   async login(username: string, pass: string): Promise<void> {
@@ -32,12 +32,12 @@ export class LoginPage extends BasePage {
   }
 
   async verifyDashboardVisible(): Promise<void> {
-    await expect(this.dashboardHeader).toBeVisible({ message: 'Dashboard not visible post-login.' });
+    await expect(this.dashboardHeader, 'Dashboard not visible post-login.').toBeVisible();
   }
 
   async logout(): Promise<void> {
     await this.userDropdown.click();
     await this.logoutButton.click();
-    await expect(this.loginButton).toBeVisible({ message: 'Session invalidation check failed; login button not found.' });
+    await expect(this.loginButton, 'Session invalidation check failed; login button not found.').toBeVisible();
   }
 }
