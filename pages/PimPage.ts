@@ -2,7 +2,7 @@ import { Page, Locator, expect } from '@playwright/test';
 import { BasePage } from './BasePage';
 
 export class PimPage extends BasePage {
-  // Sidebar & Top Nav
+  // Sidebar & Top Navigation
   readonly pimMenu: Locator;
   readonly topNavAddEmployee: Locator;
   readonly topNavEmployeeList: Locator;
@@ -15,30 +15,31 @@ export class PimPage extends BasePage {
   readonly photoUploadInput: Locator;
   readonly saveButton: Locator;
 
-  // Employee List / Search
+  // Employee List & Search
   readonly searchEmpIdInput: Locator;
   readonly searchButton: Locator;
   readonly recordsTableBody: Locator;
-  readonly noRecordsFoundToast: Locator;
+  readonly tableRows: Locator;
+  readonly recordsCountText: Locator;
 
   // Job Tab / Edit Details
   readonly jobTabLink: Locator;
   readonly jobTitleDropdown: Locator;
   readonly empStatusDropdown: Locator;
 
-  // Modals & Notifications
+  // Action Confirmations & Feedback
   readonly successToast: Locator;
   readonly confirmDeleteDialogBtn: Locator;
 
   constructor(page: Page) {
     super(page);
 
-    // Left navigation & top bar navigation (Images: PIM and Add Employee views)
+    // Navigation elements
     this.pimMenu = page.getByRole('link', { name: 'PIM' });
     this.topNavAddEmployee = page.getByRole('link', { name: 'Add Employee' });
     this.topNavEmployeeList = page.getByRole('link', { name: 'Employee List' });
 
-    // Add Employee fields (Image: Add Employee screen)
+    // Add Employee inputs
     this.firstNameInput = page.locator('input[name="firstName"]');
     this.middleNameInput = page.locator('input[name="middleName"]');
     this.lastNameInput = page.locator('input[name="lastName"]');
@@ -46,18 +47,19 @@ export class PimPage extends BasePage {
     this.photoUploadInput = page.locator('input[type="file"]');
     this.saveButton = page.getByRole('button', { name: 'Save' });
 
-    // Employee List search filters (Images: PIM search form)
+    // Search filters and table result locators
     this.searchEmpIdInput = page.locator('.oxd-input-group:has-text("Employee Id") input');
     this.searchButton = page.getByRole('button', { name: 'Search' });
     this.recordsTableBody = page.locator('.oxd-table-body');
-    this.noRecordsFoundToast = page.getByText('No Records Found');
+    this.tableRows = page.locator('.oxd-table-body .oxd-table-card');
+    this.recordsCountText = page.locator('.orangehrm-horizontal-padding span.oxd-text');
 
     // Personal details / Job tab
     this.jobTabLink = page.getByRole('link', { name: 'Job' });
     this.jobTitleDropdown = page.locator('.oxd-input-group:has-text("Job Title") .oxd-select-text');
     this.empStatusDropdown = page.locator('.oxd-input-group:has-text("Employment Status") .oxd-select-text');
 
-    // Action elements
+    // Alerts and dialog triggers
     this.successToast = page.locator('.oxd-toast-content--success');
     this.confirmDeleteDialogBtn = page.getByRole('button', { name: 'Yes, Delete' });
   }
@@ -93,13 +95,13 @@ export class PimPage extends BasePage {
     }
     await this.lastNameInput.fill(lastName);
 
-    // Overwrite the auto-generated ID (shown as '0483' in screenshot)
+    // Overwrite the auto-generated ID
     await this.addEmpIdInput.click();
     await this.page.keyboard.press('ControlOrMeta+A');
     await this.page.keyboard.press('Backspace');
     await this.addEmpIdInput.fill(empId);
 
-    // Attach profile picture (Accepts jpg, png, gif up to 1MB)
+    // Attach profile picture fixture if provided
     if (photoPath) {
       await this.photoUploadInput.setInputFiles(photoPath);
     }
@@ -124,14 +126,14 @@ export class PimPage extends BasePage {
   async editJobDetails(empId: string, jobTitle: string, status: string): Promise<void> {
     await this.searchByEmployeeId(empId);
 
-    const recordRow = this.recordsTableBody.locator('.oxd-table-card').first();
+    const recordRow = this.tableRows.first();
     await expect(recordRow, `Record with ID ${empId} was not found in the search results table.`).toBeVisible();
 
-    // Click the edit pencil icon in the Actions column
+    // Click the edit pencil icon in the row's Actions column
     await recordRow.locator('button i.bi-pencil-fill, i.bi-pencil-fill').click();
     await this.waitForLoaders();
 
-    // Switch to Job tab on left sub-navigation
+    // Navigate to Job sub-tab
     await this.jobTabLink.click();
     await this.waitForLoaders();
 
@@ -147,7 +149,7 @@ export class PimPage extends BasePage {
   async deleteEmployee(empId: string): Promise<void> {
     await this.searchByEmployeeId(empId);
 
-    const recordRow = this.recordsTableBody.locator('.oxd-table-card').first();
+    const recordRow = this.tableRows.first();
     await expect(recordRow, `Record with ID ${empId} not present for deletion.`).toBeVisible();
 
     // Click the trash icon in the Actions column
@@ -159,6 +161,20 @@ export class PimPage extends BasePage {
 
   async verifyEmployeeDeleted(empId: string): Promise<void> {
     await this.searchByEmployeeId(empId);
-    await expect(this.noRecordsFoundToast, `Employee ${empId} still found in search records table.`).toBeVisible();
+
+    // Wait for any remaining loader spinners to finish
+    await this.waitForLoaders();
+
+    // 1. Verify that the table rows collection contains zero cards
+    await expect(
+      this.tableRows,
+      `Employee record ${empId} is still visible in the search results table.`
+    ).toHaveCount(0);
+
+    // 2. Validate the persistent record counter label above the table
+    await expect(
+      this.recordsCountText.first(),
+      `Expected empty state record counter for ID ${empId}.`
+    ).toHaveText(/No Records Found|\(0\) Records Found/);
   }
 }
