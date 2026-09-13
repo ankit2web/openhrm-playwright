@@ -1,6 +1,6 @@
 # OrangeHRM UI & API Automation Assessment
 
-Production-grade automated end-to-end testing suite for OrangeHRM covering the complete **Employee Lifecycle Management** workflow using **Playwright** and **TypeScript**[cite: 1].
+Production-grade automated end-to-end testing suite for OrangeHRM covering the complete **Employee Lifecycle Management** workflow using **Playwright** and **TypeScript**.
 
 🔗 **Repository:** [https://github.com/ankit2web/openhrm-playwright](https://github.com/ankit2web/openhrm-playwright)
 
@@ -8,13 +8,13 @@ Production-grade automated end-to-end testing suite for OrangeHRM covering the c
 
 ## 🏗 Framework Architecture & Best Practices
 
-This framework is built using industry standard test automation principles[cite: 1]:
+This framework is built using industry standard test automation principles:
 
-- **Page Object Model (POM):** Complete decoupling between element locators, page interactions, and assertion logic across dedicated classes (`LoginPage.ts`, `PimPage.ts`, and `BasePage.ts`)[cite: 1].
-- **Data-Driven Testing (DDT):** Test input data (`data/employeeData.json`) and fixture assets (`data/profile-pic.png`) are separated from the test scripts[cite: 1]. Dynamic ID generation is utilized to avoid record collisions on public shared demo environments.
-- **Hybrid UI and API Validation:** Combines browser operations with Playwright's native API client (`ApiService.ts`) to cross-validate data integrity and verify resource deletion contracts over HTTP REST endpoints[cite: 1].
+- **Page Object Model (POM):** Complete decoupling between element locators, page interactions, and assertion logic across dedicated classes (`LoginPage.ts`, `PimPage.ts`, and `BasePage.ts`).
+- **Data-Driven Testing (DDT):** Test input data (`data/employeeData.json`) and fixture assets (`data/profile-pic.png`) are separated from the test scripts. Dynamic ID generation is utilized to avoid record collisions on public shared demo environments.
+- **Hybrid UI and API Validation:** Combines browser operations with Playwright's native API client (`ApiService.ts`) to cross-validate data integrity and verify resource deletion contracts over HTTP REST endpoints.
 - **Resilient Dynamic Waits:** Avoids hard-coded sleeps by tying assertions directly to DOM visibility, network idle states, and OrangeHRM loading spinner dismissals (`.oxd-loading-spinner`).
-- **Comprehensive Observability:** Native configuration capturing step-by-step traces, failure screenshots, HTML execution reports, and full-length screen recording videos on every run[cite: 1].
+- **Comprehensive Observability:** Native configuration capturing step-by-step traces, failure screenshots, HTML execution reports, and full-length screen recording videos on every run.
 - **Continuous Integration (CI):** Fully configured GitHub Actions workflow (`.github/workflows/playwright.yml`) executing tests headless on Ubuntu runners and publishing reports/videos as persistent artifacts on every push or pull request.
 
 ---
@@ -27,18 +27,18 @@ openhrm-playwright/
 │   └── workflows/
 │       └── playwright.yml            # CI pipeline workflow for GitHub Actions
 ├── data/
-│   ├── employeeData.json             # Data-driven JSON payload (names, jobs, status)[cite: 1]
-│   └── profile-pic.png               # Profile picture binary fixture[cite: 1]
-├── pages/                            # Page Object Model layer[cite: 1]
+│   ├── employeeData.json             # Data-driven JSON payload (names, jobs, status)
+│   └── profile-pic.png               # Profile picture binary fixture
+├── pages/                            # Page Object Model layer
 │   ├── BasePage.ts                   # Core reusable actions and loader synchronizers
-│   ├── LoginPage.ts                  # Authentication & session invalidation abstractions[cite: 1]
-│   └── PimPage.ts                    # Add, Search, Update, and Delete employee handlers[cite: 1]
+│   ├── LoginPage.ts                  # Authentication & session invalidation abstractions
+│   └── PimPage.ts                    # Add, Search, Update, and Delete employee handlers
 ├── services/
-│   └── ApiService.ts                 # REST API validation & contract assertions[cite: 1]
+│   └── ApiService.ts                 # REST API validation & contract assertions
 ├── tests/
-│   └── employeeLifecycle.spec.ts     # End-to-end scenario covering steps 1 to 6[cite: 1]
-├── playwright.config.ts              # Playwright test runner, reporters, and browser setup[cite: 1]
-├── package.json                      # NPM project dependencies and execution scripts[cite: 1]
+│   └── employeeLifecycle.spec.ts     # End-to-end scenario covering steps 1 to 6
+├── playwright.config.ts              # Playwright test runner, reporters, and browser setup
+├── package.json                      # NPM project dependencies and execution scripts
 ├── package-lock.json                 # Pinned dependency tree lockfile
 ├── tsconfig.json                     # TypeScript compilation configuration
 └── README.md                         # Comprehensive documentation & execution guide
